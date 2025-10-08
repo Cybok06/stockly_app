@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Stockly — Offline-First Inventory</title>
+
+  <!-- Display + body fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --ink:#1f2937;      /* text */
+      --muted:#6b7280;    /* subtle text */
+      --bg:#f4f6f9;       /* page background */
+      --btn:#111827;      /* button */
+      --btn-hover:#0b1220;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--ink)}
+    .bg-app{background:var(--bg); position:relative; overflow:hidden;}
+
+    /* ===== Floating background images ===== */
+    .bg-layer{
+      position:fixed; inset:0; z-index:0;
+      pointer-events:none; /* don't block clicks */
+      overflow:hidden;
+    }
+    .bg-layer::after{
+      /* soft veil to keep foreground readable */
+      content:""; position:absolute; inset:0;
+      background:linear-gradient(to bottom, rgba(246,247,251,.5), rgba(246,247,251,.85));
+    }
+    .bg-item{
+      position:absolute; 
+      width:min(42vw, 380px); 
+      aspect-ratio: 1/1;      /* square-ish cards */
+      opacity:.14;             /* low transparency */
+      background-size:cover; background-position:center;
+      filter: saturate(.9);
+      border-radius:18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.06);
+      animation: drift 36s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+
+    /* Different sizes/positions/durations per item */
+    .bg-item:nth-child(1){ left:-6vw;  top:8vh;   width:min(36vw, 320px); animation-duration:38s; }
+    .bg-item:nth-child(2){ right:-8vw; top:14vh;  width:min(40vw, 360px); animation-duration:42s; animation-delay:-5s;}
+    .bg-item:nth-child(3){ left:10vw;  bottom:-10vh; width:min(34vw, 300px); animation-duration:40s; animation-delay:-12s;}
+    .bg-item:nth-child(4){ right:12vw; bottom:-8vh;  width:min(30vw, 280px); animation-duration:34s; }
+    .bg-item:nth-child(5){ left:42vw;  top:-10vh; width:min(28vw, 260px); animation-duration:46s; animation-delay:-8s;}
+    .bg-item:nth-child(6){ right:38vw; bottom:18vh; width:min(26vw, 240px); animation-duration:50s; animation-delay:-14s;}
+
+    @keyframes drift{
+      0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0.5deg); }
+      50%  { transform: translate3d(2vw, -2vh, 0) scale(1.03) rotate(-0.5deg); }
+      100% { transform: translate3d(-2vw, 2vh, 0) scale(1.06) rotate(0.8deg); }
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .bg-item{ animation:none; }
+    }
+
+    /* ===== Splash container ===== */
+    .splash{
+      min-height:100vh;
+      display:flex; align-items:center; justify-content:center;
+      padding:24px; position:relative; z-index:1; /* above bg-layer */
+    }
+    .splash-inner{
+      width:100%;
+      max-width:520px;
+      text-align:center;
+      animation: fadeIn .6s ease both;
+    }
+
+    /* Logo (text-based, chunky) */
+    .logo{
+      font-family:"Bungee", system-ui;
+      font-size:54px;
+      line-height:1;
+      color:#2b2b2b;
+      letter-spacing:.4px;
+      margin:22vh 0 10px;  /* pushes it lower like your mock */
+      text-shadow:0 1px 0 rgba(0,0,0,.06);
+    }
+
+    /* Tagline at lower area */
+    .tagline{
+      color:var(--muted);
+      font-size:14px;
+      margin:28vh auto 18px;  /* sits near bottom like your screenshot text */
+      max-width:380px;
+    }
+
+    /* The small bar/pill at bottom */
+    .pill{
+      width:120px; height:6px; border-radius:6px;
+      background:#2b2b2b; opacity:.95;
+      margin:0 auto 8px;
+    }
+
+    /* Button (optional) */
+    .btn-primary{
+      display:inline-block;
+      margin-top:22px;
+      padding:10px 16px;
+      border-radius:12px;
+      border:1px solid #e5e7eb;
+      background:var(--btn);
+      color:#fff; font-weight:600; cursor:pointer;
+    }
+    .btn-primary:hover{ background:var(--btn-hover); }
+
+    /* smooth fade */
+    @keyframes fadeIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+
+    @media (max-width:480px){
+      .logo{ font-size:44px; margin:20vh 0 8px; }
+      .tagline{ margin:30vh auto 14px; }
+    }
+  </style>
+</head>
+<body class="bg-app">
+
+  <!-- Moving, low-transparency background with your images -->
+  <div class="bg-layer" aria-hidden="true">
+    <div class="bg-item" style="background-image:url('https://cdn-images.farfetch-contents.com/22/55/42/71/22554271_57289325_1000.jpg');"></div>
+    <div class="bg-item" style="background-image:url('https://shop.mandodiao.com/cdn/shop/products/oW1nhhho_990x.png?v=1650438376');"></div>
+    <div class="bg-item" style="background-image:url('https://gh.jumia.is/unsafe/fit-in/500x500/filters:fill(white)/product/09/728511/1.jpg?4991');"></div>
+    <div class="bg-item" style="background-image:url('https://d1fufvy4xao6k9.cloudfront.net/images/landings/43/shirts-mob-1.jpg');"></div>
+    <div class="bg-item" style="background-image:url('https://i.pinimg.com/236x/6d/d8/f7/6dd8f7c95ba130ba2b36eba0d2217990.jpg');"></div>
+    <div class="bg-item" style="background-image:url('https://botique-fashion.nl/wp-content/uploads/2023/09/Botique-in-lisse-kanaalstraat-8-2161-jl-foto-voorkant-pand.jpg');"></div>
+  </div>
+
+  <!-- Foreground splash -->
+  <main class="splash">
+    <div class="splash-inner">
+      <h1 class="logo" aria-label="Stockly">Stockly</h1>
+      <p class="tagline">offline-first inventory app designed for boutique owners.</p>
+      <div class="pill" aria-hidden="true"></div>
+
+      <!-- Optional: show a button, or remove if you want pure splash -->
+      <button id="continueBtn" class="btn-primary" type="button">Continue</button>
+    </div>
+  </main>
+
+   <script>
+    // First page after splash
+    const NEXT_URL = 'welcome_1.html';
+
+    document.getElementById('continueBtn').addEventListener('click', () => {
+      try { localStorage.setItem('stockly_first_visit', new Date().toISOString()); } catch(e){}
+      location.href = NEXT_URL;
+    });
+  </script>
+</body>
+</html>
